@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-var algo = flag.String("a", "sha256", "algorithm to use")
+var algo = flag.String("a", "sha1", "algorithm to use")
 
 func main() {
 	flag.Parse()
