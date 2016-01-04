@@ -2,7 +2,7 @@
 
 calculate checksums
 
-It's a simpler version of shasum + md5sum, but only for sha1, sha256, and
+It's a simpler version of shasum + md5sum, but only for md5, sha1, sha256, and
 sha512.
 
 ## usage

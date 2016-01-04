@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/md5"
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
@@ -23,6 +24,8 @@ func main() {
 		h = sha256.New()
 	case "sha512", "512":
 		h = sha512.New()
+	case "md5":
+		h = md5.New()
 	default:
 		fmt.Fprintf(os.Stderr, "unsupported algorithm: %v\n", *algo)
 		os.Exit(1)
