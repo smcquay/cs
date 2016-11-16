@@ -43,14 +43,18 @@ func hsh(files []string) chan result {
 	}
 
 	if len(files) == 0 {
-		hsh := h()
-		_, err := io.Copy(hsh, os.Stdin)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "%v\n", err)
-			os.Exit(1)
-		}
-		fmt.Printf("%x  -\n", hsh.Sum(nil))
-		return nil
+		r := make(chan result)
+		go func() {
+			hsh := h()
+			_, err := io.Copy(hsh, os.Stdin)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				os.Exit(1)
+			}
+			r <- result{msg: fmt.Sprintf("%x  -", hsh.Sum(nil))}
+			close(r)
+		}()
+		return r
 	}
 
 	jobs := make(chan checksum)
