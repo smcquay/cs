@@ -9,10 +9,12 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 )
 
 var algo = flag.String("a", "sha1", "algorithm to use")
 var mode = flag.Bool("c", false, "check")
+var ngo = flag.Int("n", runtime.NumCPU(), "number of goroutines")
 
 func main() {
 	flag.Parse()

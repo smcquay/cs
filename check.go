@@ -94,8 +94,7 @@ func check(files []string) chan error {
 
 	results := []<-chan error{}
 
-	workers := 32
-	for w := 0; w < workers; w++ {
+	for w := 0; w < *ngo; w++ {
 		results = append(results, compute(jobs))
 	}
 
