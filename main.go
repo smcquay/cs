@@ -19,8 +19,12 @@ func main() {
 	files := flag.Args()
 	switch *mode {
 	case true:
-		if err := check(files); err != nil {
+		c := 0
+		for err := range check(files) {
+			c++
 			fmt.Fprintf(os.Stderr, "%v\n", err)
+		}
+		if c > 0 {
 			os.Exit(1)
 		}
 	case false:
