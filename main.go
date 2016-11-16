@@ -23,25 +23,25 @@ func main() {
 	files := flag.Args()
 	switch *mode {
 	case true:
-		c := 0
+		ec := 0
 		for err := range check(files) {
-			c++
+			ec++
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 		}
-		if c > 0 {
+		if ec > 0 {
 			os.Exit(1)
 		}
 	case false:
-		c := 0
+		ec := 0
 		for res := range hsh(files) {
 			if res.err != nil {
-				c++
+				ec++
 				fmt.Fprintf(os.Stderr, "%v\n", res.err)
 			} else {
 				fmt.Printf("%v\n", res.msg)
 			}
 		}
-		if c > 0 {
+		if ec > 0 {
 			os.Exit(1)
 		}
 	}
