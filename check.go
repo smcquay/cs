@@ -95,7 +95,7 @@ func check(files []string) chan error {
 	results := []<-chan error{}
 
 	for w := 0; w < *ngo; w++ {
-		results = append(results, compute(jobs))
+		results = append(results, verify(jobs))
 	}
 
 	return merge(results)
@@ -125,7 +125,7 @@ func merge(cs []<-chan error) chan error {
 	return out
 }
 
-func compute(jobs chan work) chan error {
+func verify(jobs chan work) chan error {
 	r := make(chan error)
 	go func() {
 		for job := range jobs {
