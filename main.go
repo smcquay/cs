@@ -12,10 +12,26 @@ import (
 )
 
 var algo = flag.String("a", "sha1", "algorithm to use")
+var mode = flag.Bool("c", false, "check")
 
 func main() {
 	flag.Parse()
 	files := flag.Args()
+	switch *mode {
+	case true:
+		if err := check(files); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
+	case false:
+		if err := hsh(files); err != nil {
+			fmt.Fprintf(os.Stderr, "%v\n", err)
+			os.Exit(1)
+		}
+	}
+}
+
+func hsh(files []string) error {
 	h := sha256.New()
 	switch *algo {
 	case "sha1", "1":
@@ -27,8 +43,7 @@ func main() {
 	case "md5":
 		h = md5.New()
 	default:
-		fmt.Fprintf(os.Stderr, "unsupported algorithm: %v\n", *algo)
-		os.Exit(1)
+		return fmt.Errorf("unsupported algorithm: %v", *algo)
 	}
 
 	if len(files) == 0 {
@@ -55,4 +70,5 @@ func main() {
 			fmt.Printf("%x  %s\n", h.Sum(nil), name)
 		}
 	}
+	return nil
 }
