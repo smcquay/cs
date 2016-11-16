@@ -94,7 +94,7 @@ func check(files []string) chan error {
 
 	results := []<-chan error{}
 
-	workers := 8
+	workers := 32
 	for w := 0; w < workers; w++ {
 		results = append(results, compute(jobs))
 	}
@@ -140,12 +140,11 @@ func compute(jobs chan work) chan error {
 				continue
 			}
 			if _, err := io.Copy(job.cs.hash, f); err != nil {
-				log.Printf("%+v", err)
+				r <- err
+				continue
 			}
 			f.Close()
-			if fmt.Sprintf("%x", job.cs.hash.Sum(nil)) == job.cs.checksum {
-				fmt.Printf("%s: OK\n", job.cs.filename)
-			} else {
+			if fmt.Sprintf("%x", job.cs.hash.Sum(nil)) != job.cs.checksum {
 				r <- fmt.Errorf("%s: bad", job.cs.filename)
 			}
 		}
