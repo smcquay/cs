@@ -83,10 +83,10 @@ func toInput(args []string) chan input {
 // needed to perform a checksum.
 func parseCS(line string) checksum {
 	elems := strings.Fields(line)
-	if len(elems) != 2 {
-		return checksum{err: fmt.Errorf("unexpected content: %d != 2", len(elems))}
+	if len(elems) < 1 {
+		return checksum{err: fmt.Errorf("couldn't find checksum in %q", line)}
 	}
-	cs, f := elems[0], elems[1]
+	cs := elems[0]
 	var hsh hash.Hash
 	switch len(cs) {
 	case 32:
@@ -100,7 +100,8 @@ func parseCS(line string) checksum {
 	default:
 		return checksum{err: fmt.Errorf("unknown format: %q", line)}
 	}
-	return checksum{filename: f, hash: hsh, checksum: cs}
+
+	return checksum{filename: strings.TrimSpace(line[len(cs):]), hash: hsh, checksum: cs}
 }
 
 // verify does grunt work of verifying a stream of jobs (filenames).
