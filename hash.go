@@ -38,6 +38,7 @@ func hsh(files []string) chan result {
 		r := make(chan result)
 		go func() {
 			r <- result{err: fmt.Errorf("unsupported algorithm: %v", *algo)}
+			close(r)
 		}()
 		return r
 	}
