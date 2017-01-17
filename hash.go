@@ -37,7 +37,7 @@ func hsh(files []string) chan result {
 	default:
 		r := make(chan result)
 		go func() {
-			r <- result{err: fmt.Errorf("unsupported algorithm: %v", *algo)}
+			r <- result{err: fmt.Errorf("unsupported algorithm: %v (supported: md5, sha1, sha256, sha512)", *algo)}
 			close(r)
 		}()
 		return r
