@@ -31,7 +31,7 @@ func main() {
 				ec++
 				fmt.Fprintf(os.Stderr, "%v\n", res.err)
 			} else {
-				fmt.Printf("%v\n", res.msg)
+				fmt.Printf("%v   %v\n", res.cs, res.f)
 			}
 		}
 		if ec > 0 {

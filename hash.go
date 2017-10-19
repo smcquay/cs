@@ -14,7 +14,8 @@ import (
 
 // result is a message or error payload
 type result struct {
-	msg string
+	f   string
+	cs  string
 	err error
 }
 
@@ -52,7 +53,7 @@ func hsh(files []string) chan result {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
 				os.Exit(1)
 			}
-			r <- result{msg: fmt.Sprintf("%x  -", hsh.Sum(nil))}
+			r <- result{cs: fmt.Sprintf("%x", hsh.Sum(nil)), f: "-"}
 			close(r)
 		}()
 		return r
@@ -92,7 +93,7 @@ func compute(h hashr, jobs chan checksum) chan result {
 				r <- result{err: err}
 				continue
 			}
-			r <- result{msg: fmt.Sprintf("%x  %s", hsh.Sum(nil), job.filename)}
+			r <- result{f: job.filename, cs: fmt.Sprintf("%x", hsh.Sum(nil))}
 		}
 		close(r)
 	}()
