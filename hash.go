@@ -32,7 +32,7 @@ func (r results) Less(i, j int) bool { return r[i].f < r[j].f }
 type hashr func() hash.Hash
 
 // hsh figures out which hash algo to use, and distributes the work of hashing
-func hsh(files []string) chan result {
+func hsh(files []string, verbose bool) chan result {
 	var h hashr
 	switch *algo {
 	case "sha1", "1":
@@ -77,7 +77,7 @@ func hsh(files []string) chan result {
 
 	res := []<-chan result{}
 	for w := 0; w < *ngo; w++ {
-		res = append(res, compute(h, jobs))
+		res = append(res, compute(h, jobs, verbose))
 	}
 
 	o := make(chan result)
@@ -96,7 +96,7 @@ func hsh(files []string) chan result {
 }
 
 // compute is the checksumming workhorse
-func compute(h hashr, jobs chan checksum) chan result {
+func compute(h hashr, jobs chan checksum, verbose bool) chan result {
 	hsh := h()
 	r := make(chan result)
 	go func() {
@@ -112,6 +112,9 @@ func compute(h hashr, jobs chan checksum) chan result {
 			if err != nil {
 				r <- result{err: err}
 				continue
+			}
+			if verbose {
+				fmt.Fprintf(os.Stderr, "%v\n", job.filename)
 			}
 			r <- result{f: job.filename, cs: fmt.Sprintf("%x", hsh.Sum(nil))}
 		}

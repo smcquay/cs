@@ -31,7 +31,7 @@ type checksum struct {
 }
 
 // check is the entry point for -c operation.
-func check(args []string) chan error {
+func check(args []string, verbose bool) chan error {
 	jobs := make(chan checksum)
 
 	go func() {
@@ -55,7 +55,7 @@ func check(args []string) chan error {
 	results := []<-chan error{}
 
 	for w := 0; w < *ngo; w++ {
-		results = append(results, verify(jobs))
+		results = append(results, verify(jobs, verbose))
 	}
 
 	return merge(results)
@@ -105,7 +105,7 @@ func parseCS(line string) checksum {
 }
 
 // verify does grunt work of verifying a stream of jobs (filenames).
-func verify(jobs chan checksum) chan error {
+func verify(jobs chan checksum, verbose bool) chan error {
 	r := make(chan error)
 	go func() {
 		for job := range jobs {
@@ -125,6 +125,8 @@ func verify(jobs chan checksum) chan error {
 			f.Close()
 			if fmt.Sprintf("%x", job.hash.Sum(nil)) != job.checksum {
 				r <- fmt.Errorf("%s: bad", job.filename)
+			} else if verbose {
+				fmt.Fprintf(os.Stderr, "ok: %v\n", job.filename)
 			}
 		}
 		close(r)
