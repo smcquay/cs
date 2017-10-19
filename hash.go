@@ -9,6 +9,7 @@ import (
 	"hash"
 	"io"
 	"os"
+	"sort"
 	"sync"
 )
 
@@ -18,6 +19,13 @@ type result struct {
 	cs  string
 	err error
 }
+
+// results exists to sort a slice of result
+type results []result
+
+func (r results) Len() int           { return len(r) }
+func (r results) Swap(i, j int)      { r[i], r[j] = r[j], r[i] }
+func (r results) Less(i, j int) bool { return r[i].f < r[j].f }
 
 // hashr exists so that we can make a thing that can return valid hash.Hash
 // interfaces.
@@ -72,7 +80,19 @@ func hsh(files []string) chan result {
 		res = append(res, compute(h, jobs))
 	}
 
-	return rmerge(res)
+	o := make(chan result)
+	go func() {
+		rs := results{}
+		for r := range rmerge(res) {
+			rs = append(rs, r)
+		}
+		sort.Sort(rs)
+		for _, r := range rs {
+			o <- r
+		}
+		close(o)
+	}()
+	return o
 }
 
 // compute is the checksumming workhorse
